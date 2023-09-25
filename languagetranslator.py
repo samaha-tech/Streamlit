@@ -10,29 +10,51 @@ Original file is located at
 import streamlit as st
 from googletrans import Translator
 
-# Initialize the Translator
-translator = Translator()
+# Create a Streamlit app title and set a custom app color
+st.set_page_config(
+    page_title="Language Translator",
+    page_icon="✏️",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+st.markdown(
+    """
+    <style>
+    .css-1v3fvcr {
+        background-color: #FF5733;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-# Streamlit app title
-st.title("Language Translator")
-
-# Input text
+# Create a text input field for the user to enter text
 input_text = st.text_area("Enter text to translate:")
 
-# Language selection
-from_lang = st.selectbox("Select source language:", translator.LANGUAGES.keys())
-to_lang = st.selectbox("Select target language:", translator.LANGUAGES.keys())
+# Create a dropdown menu for selecting the target language
+target_language = st.selectbox("Select target language:", ["en", "es", "fr", "de", "ja", "zh"])
 
-# Translate button
-if st.button("Translate"):
+# Create a dropdown menu for selecting the source language
+source_language = st.selectbox("Select source language:", ["auto", "en", "es", "fr", "de", "ja", "zh"])
+
+# Create a function to translate the text
+def translate_text(input_text, source_language, target_language):
     try:
-        # Translate the input text
-        translated_text = translator.translate(input_text, src=from_lang, dest=to_lang).text
-        st.success("Translation:")
-        st.write(translated_text)
+        translator = Translator()
+        translated = translator.translate(input_text, src=source_language, dest=target_language)
+        return translated.text
     except Exception as e:
-        st.error("An error occurred while translating. Please try again.")
+        return f"Error: {str(e)}"
 
-# Display information about the supported languages
-st.sidebar.subheader("Supported Languages")
-st.sidebar.write(translator.LANGUAGES)
+# Create a button to trigger the translation
+if st.button("Translate"):
+    if input_text:
+        translated_text = translate_text(input_text, source_language, target_language)
+        st.success(f"Translated text ({source_language} to {target_language}):")
+        st.write(translated_text)
+    else:
+        st.warning("Please enter text to translate.")
+
+# Add a footer
+st.footer("Powered by Google Translate API")
