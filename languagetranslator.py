@@ -7,8 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1OQAgOVqQyZsill7npvfhS7z2XsI_PHuJ
 """
 
+
 import streamlit as st
-from googletrans import Translator
+from googletrans import Translator, LANGUAGES
 
 # Create a Streamlit app title and set a custom app color
 st.set_page_config(
@@ -33,30 +34,28 @@ st.markdown(
 input_text = st.text_area("Enter text to translate:")
 
 # Create a dropdown menu for selecting the target language
-target_language = st.selectbox("Select target language:", ["en", "es", "fr", "de", "ja", "zh"])
-
-# Create a dropdown menu for selecting the source language
-source_language = st.selectbox("Select source language:", ["auto", "en", "es", "fr", "de", "ja", "zh"])
+target_language = st.selectbox("Select target language:", list(LANGUAGES.values()))
 
 # Create a function to translate the text
-def translate_text(input_text, source_language, target_language):
+def translate_text(input_text, target_language):
     try:
         translator = Translator()
-        translated = translator.translate(input_text, src=source_language, dest=target_language)
-        return translated.text, translated.src
+        translation = translator.translate(input_text, dest=target_language)
+        source_language = translator.detect(input_text).lang
+        return translation.text, source_language
     except Exception as e:
         return f"Error: {str(e)}", ""
 
 # Create a button to trigger the translation
 if st.button("Translate"):
     if input_text:
-        translated_text, source_lang = translate_text(input_text, source_language, target_language)
+        translated_text, source_lang = translate_text(input_text, target_language)
         if source_lang:
-            st.success(f"Translated text ({source_lang} to {target_language}):")
+            st.success(f"Translated text (From {LANGUAGES[source_lang]} to {LANGUAGES[target_language]}):")
             st.write(translated_text)
         else:
             st.warning("Translation failed. Please check your input and language selections.")
     else:
         st.warning("Please enter text to translate.")
 
-
+# Add a footer
