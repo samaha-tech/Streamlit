@@ -43,16 +43,19 @@ def translate_text(input_text, source_language, target_language):
     try:
         translator = Translator()
         translated = translator.translate(input_text, src=source_language, dest=target_language)
-        return translated.text
+        return translated.text, translated.src
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {str(e)}", ""
 
 # Create a button to trigger the translation
 if st.button("Translate"):
     if input_text:
-        translated_text = translate_text(input_text, source_language, target_language)
-        st.success(f"Translated text ({source_language} to {target_language}):")
-        st.write(translated_text)
+        translated_text, source_lang = translate_text(input_text, source_language, target_language)
+        if source_lang:
+            st.success(f"Translated text ({source_lang} to {target_language}):")
+            st.write(translated_text)
+        else:
+            st.warning("Translation failed. Please check your input and language selections.")
     else:
         st.warning("Please enter text to translate.")
 
