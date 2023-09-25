@@ -56,5 +56,4 @@ if st.button("Translate"):
     else:
         st.warning("Please enter text to translate.")
 
-# Add a footer
-st.footer("Powered by Google Translate API")
+
